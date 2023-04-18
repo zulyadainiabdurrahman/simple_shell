@@ -11,7 +11,7 @@
 
 char *strtok(char *str, const char *delim);
 int execve(const char *filename, char *const argv[], char *const envp[]);
-
+int add_numbers(int a, int b);
 
 
 
