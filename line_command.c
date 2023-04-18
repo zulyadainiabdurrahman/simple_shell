@@ -11,10 +11,11 @@ void simple_shell(void)
 	char *inpt = NULL;
 	size_t buf_size = 0;
 	char *tkn;
-	char **argmts;
+	char **argmts = malloc(sizeof(char *) * 10);
 
 	int status;
 	int num_tkns = 0;
+	int argmts_size = 10;
 
 	while (1)
 	{
@@ -25,13 +26,18 @@ void simple_shell(void)
 			break;
 		}
 
-		argmts = malloc(sizeof(char *) * (num_tkns + 1));
+		num_tkns = 0;
 		tkn = strtok(inpt, " \n");
 		while (tkn != NULL)
 		{
 			argmts[num_tkns++] = tkn;
+
+			if (num_tkns == argmts_size)
+			{
+				argmts_size *= 2;
+				argmts = realloc(argmts, sizeof(char *) * argmts_size);
+			}
 			tkn = strtok(NULL, " \n");
-			argmts = realloc(argmts, sizeof(char *) * (num_tkns +1));
 		}
 
 		argmts[num_tkns] = NULL;
