@@ -7,6 +7,7 @@
  */
 int main(int argc, char **argv)
 {
+	simple_shell();
 
 	return (0);
 }
