@@ -1,12 +1,14 @@
 #include "main.h"
+
 /**
- * main - main point
- * @argc: argument count
- * @argv: argument vector
+ * main - This function calls the function simple_shell
+ * It takes no arguments
  * Return: 0 on success error otherwise
  */
-int main(int argc, char **argv)
+
+int main()
 {
+	void simple_shell(void);
 
 	return (0);
 }

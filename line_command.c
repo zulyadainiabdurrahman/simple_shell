@@ -1,45 +1,71 @@
 #include "main.h"
-#include <stdio.h>
 
 /**
- * main - This program writes a UNIX command line interpreter
+ * simple_shell - This function writes a UNIX command line interpreter
  * Takes no arguments
- * Return: 0 when the program is successful
+ * Return: void
  */
 
-int main(void)
+void simple_shell(void)
 {
-	char *inpts[MAX_COMMAND_LENGTH];
-	char cmd[MAX_COMMAND_LENGTH];
+	char *inpt = NULL;
+	size_t buf_size = 0;
 	char *tkn;
+	char **argmts = malloc(sizeof(char *) * 10);
 
-	int i = 0;
+	int status;
+	int num_tkns = 0;
+	int argmts_size = 10;
 
 	while (1)
 	{
 		printf("#");
-
-		if (fgets(cmd, MAX_COMMAND_LENGTH, stdin) == NULL)
+		if (getline(&inpt, &buf_size, stdin) == -1)
 		{
-			printf("End of line");
+			printf("\n");
+			break;
 		}
 
-		cmd[strcspn(cmd, "\n")] = '\0';
-
-		tkn = strtok(cmd, " ");
+		num_tkns = 0;
+		tkn = strtok(inpt, " \n");
 		while (tkn != NULL)
 		{
-			inpts[i++] = tkn;
-			tkn = strtok(NULL, " ");
+			argmts[num_tkns++] = tkn;
+
+			if (num_tkns == argmts_size)
+			{
+				argmts_size *= 2;
+				argmts = realloc(argmts, sizeof(char *) * argmts_size);
+			}
+			tkn = strtok(NULL, " \n");
 		}
 
-		inpts[i] = NULL;
+		argmts[num_tkns] = NULL;
 
-		if (execve(args[0], inpts, NULL) == -1)
+		if (num_tkns > 0)
 		{
-			printf("%s failed to execute\n", inpts[0]);
+			pid_t pid = fork();
+
+			if (pid == -1)
+			{
+			printf("Error: child process failed to be created\n");
+			}
+			else if (pid == 0)
+			{
+				if (execve(argmts[0], argmts, NULL) == -1)
+				{
+				printf("Error: command failed to execute\n");
+				}
+				exit(0);
+			}
+			else
+			{
+				waitpid(pid, &status, 0);
+			}
 		}
+		free(argmts);
 	}
-	return (0);
+
+	free(inpt);
 }
 
