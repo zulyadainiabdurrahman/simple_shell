@@ -14,7 +14,7 @@ void simple_shell(void)
 	char **argmts;
 
 	int status;
-	int i = 0;
+	int num_tkns = 0;
 
 	while (1)
 	{
@@ -25,30 +25,28 @@ void simple_shell(void)
 			break;
 		}
 
-		if (inpt[0] == '\n' || inpt[0] == '#')
-		{
-			continue;
-		}
-
-		argmts = malloc(sizeof(char *) * 64);
-		tkn = strtok(inpt, "\n");
+		argmts = malloc(sizeof(char *) * (num_tkns + 1));
+		tkn = strtok(inpt, " \n");
 		while (tkn != NULL)
 		{
-			argmts[i++] = tkn;
-			tkn = strtok(NULL, "\n");
+			argmts[num_tkns++] = tkn;
+			tkn = strtok(NULL, " \n");
+			argmts = realloc(argmts, sizeof(char *) * (num_tkns +1));
 		}
 
-		argmts[i] = NULL;
+		argmts[num_tkns] = NULL;
 
-		pid_t pid = fork();
-
-		if (pid == -1)
+		if (num_tkns > 0)
 		{
-		printf("Error: child process failed to be created\n");
-		}
+			pid_t pid = fork();
+
+			if (pid == -1)
+			{
+			printf("Error: child process failed to be created\n");
+			}
 			else if (pid == 0)
 			{
-				if (execve(argmts[0], argmts) == -1)
+				if (execve(argmts[0], argmts, NULL) == -1)
 				{
 				printf("Error: command failed to execute\n");
 				}
@@ -58,6 +56,7 @@ void simple_shell(void)
 			{
 				waitpid(pid, &status, 0);
 			}
+		}
 		free(argmts);
 	}
 
