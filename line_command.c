@@ -42,14 +42,14 @@ void simple_shell(void)
 
 		argmts[num_tkns] = NULL;
 
-		if (num_tkns > 0)
-		{
-			pid_t pid = fork();
+			if (num_tkns > 0)
+				{
+					pid_t pid = fork();
 
-			if (pid == -1)
-			{
+					if (pid == -1)
+				{
 			printf("Error: child process failed to be created\n");
-			}
+				}
 			else if (pid == 0)
 			{
 				if (execve(argmts[0], argmts, NULL) == -1)
